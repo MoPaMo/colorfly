@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { SketchPicker } from 'react-color';
-import { saveAs } from 'file-saver';
+// src/App.jsx
+import React, { useState, useEffect } from "react";
+import { CirclePicker } from "react-color"; // Using CirclePicker as color wheel
+import { saveAs } from "file-saver";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   useNavigate,
   useLocation,
-} from 'react-router-dom';
+} from "react-router-dom";
 
 // Utility Functions
 const hexToHSL = (hex) => {
@@ -17,7 +18,9 @@ const hexToHSL = (hex) => {
 
   let max = Math.max(r, g, b),
     min = Math.min(r, g, b);
-  let h, s, l = (max + min) / 2;
+  let h,
+    s,
+    l = (max + min) / 2;
 
   if (max === min) {
     h = s = 0; // achromatic
@@ -79,13 +82,13 @@ const HSLToHex = (h, s, l) => {
 
   const r = Math.round((rPrime + m) * 255)
     .toString(16)
-    .padStart(2, '0');
+    .padStart(2, "0");
   const g = Math.round((gPrime + m) * 255)
     .toString(16)
-    .padStart(2, '0');
+    .padStart(2, "0");
   const b = Math.round((bPrime + m) * 255)
     .toString(16)
-    .padStart(2, '0');
+    .padStart(2, "0");
 
   return `#${r}${g}${b}`;
 };
@@ -94,37 +97,43 @@ const HSLToHex = (h, s, l) => {
 const PaletteDisplay = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const colorsParam = queryParams.get('colors');
-  const colors = colorsParam ? colorsParam.split(',') : [];
+  const colorsParam = queryParams.get("colors");
+  const colors = colorsParam ? colorsParam.split(",") : [];
 
   if (colors.length === 0) {
     return (
-      <div className="app">
-        <h1>No Palette Found</h1>
-        <p>Please generate a palette to create a shareable link.</p>
-        <a href="/">Go Back</a>
-        <style jsx>{paletteStyles}</style>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
+        <h1 className="text-3xl font-bold mb-4">No Palette Found</h1>
+        <p className="text-lg mb-6">
+          Please generate a palette to create a shareable link.
+        </p>
+        <a href="/" className="text-blue-500 hover:underline">
+          Go Back
+        </a>
       </div>
     );
   }
 
   return (
-    <div className="app">
-      <h1>Your Shared Palette</h1>
-      <div className="palette">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
+      <h1 className="text-3xl font-bold mb-6">Your Shared Palette</h1>
+      <div className="flex flex-wrap justify-center gap-4">
         {colors.map((color, index) => (
           <div
             key={index}
-            className="color-swatch"
+            className="w-24 h-24 rounded-lg cursor-pointer relative overflow-hidden shadow-md"
             style={{ backgroundColor: color }}
             onClick={() => navigator.clipboard.writeText(color)}
           >
-            <span>{color}</span>
+            <span className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-white bg-opacity-80 text-sm px-2 py-1 rounded">
+              {color}
+            </span>
           </div>
         ))}
       </div>
-      <a href="/">Go Back</a>
-      <style jsx>{paletteStyles}</style>
+      <a href="/" className="mt-6 text-blue-500 hover:underline">
+        Go Back
+      </a>
     </div>
   );
 };
@@ -132,39 +141,39 @@ const PaletteDisplay = () => {
 // Main App Component
 const App = () => {
   const [colors, setColors] = useState([]);
-  const [currentColor, setCurrentColor] = useState('#ff0000');
+  const [currentColor, setCurrentColor] = useState("#ff0000");
   const navigate = useNavigate();
 
   // Register service worker for PWA
   useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/service-worker.js').then(
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/service-worker.js").then(
           (registration) => {
-            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            console.log(
+              "ServiceWorker registration successful with scope: ",
+              registration.scope
+            );
           },
           (error) => {
-            console.error('ServiceWorker registration failed: ', error);
+            console.error("ServiceWorker registration failed: ", error);
           }
         );
       });
     }
   }, []);
 
-  
   const generatePalette = () => {
     const hsl = hexToHSL(currentColor);
     const palette = [];
 
-    
     for (let i = 0; i < 5; i++) {
-      
-      const randomOffset = Math.random() * 30 - 15; 
-      const randomSaturation = Math.random() * 20 - 10; 
-      const randomLightness = Math.random() * 20 - 10; 
+      const randomOffset = Math.random() * 30 - 15;
+      const randomSaturation = Math.random() * 20 - 10;
+      const randomLightness = Math.random() * 20 - 10;
 
       let h = (hsl.h + i * 30 + randomOffset) % 360;
-      if (h < 0) h += 360; 
+      if (h < 0) h += 360;
 
       let s = Math.min(Math.max(hsl.s + randomSaturation, 0), 100);
       let l = Math.min(Math.max(hsl.l + randomLightness, 0), 100);
@@ -182,75 +191,112 @@ const App = () => {
       timestamp: new Date().toISOString(),
     };
 
-    const paletteURL = `${window.location.origin}/palette?colors=${colors.join(',')}`;
+    const paletteURL = `${window.location.origin}/palette?colors=${colors.join(
+      ","
+    )}`;
 
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'Colorfly Palette',
-          text: `Check out this color palette: ${colors.join(', ')}`,
+          title: "Colorfly Palette",
+          text: `Check out this color palette: ${colors.join(", ")}`,
           url: paletteURL,
         });
       } catch (error) {
-        console.error('Error sharing:', error);
+        console.error("Error sharing:", error);
       }
     } else {
       // Fallback for browsers that don't support Web Share API
-      const blob = new Blob([JSON.stringify(paletteData, null, 2)], { type: 'application/json' });
-      saveAs(blob, 'colorfly-palette.json');
+      const blob = new Blob([JSON.stringify(paletteData, null, 2)], {
+        type: "application/json",
+      });
+      saveAs(blob, "colorfly-palette.json");
     }
   };
 
-  
+  // Handle generating shareable link
   const handleGenerateLink = () => {
     if (colors.length === 0) {
-      alert('Please generate a palette first.');
+      alert("Please generate a palette first.");
       return;
     }
-    const paletteURL = `${window.location.origin}/palette?colors=${colors.join(',')}`;
-    navigator.clipboard.writeText(paletteURL)
-      .then(() => alert('Palette link copied to clipboard!'))
-      .catch((err) => console.error('Failed to copy: ', err));
+    const paletteURL = `${window.location.origin}/palette?colors=${colors.join(
+      ","
+    )}`;
+    navigator.clipboard
+      .writeText(paletteURL)
+      .then(() => alert("Palette link copied to clipboard!"))
+      .catch((err) => console.error("Failed to copy: ", err));
   };
 
-  return (
-    <div className="app">
-      <h1>Colorfly</h1>
+  // Available colors for the color wheel (preset colors)
+  const colorWheelColors = [
+    "#FF6900",
+    "#FCB900",
+    "#7BDCB5",
+    "#00D084",
+    "#8ED1FC",
+    "#0693E3",
+    "#ABB8C3",
+    "#EB144C",
+    "#F78DA7",
+    "#9900EF",
+  ];
 
-      <div className="color-picker">
-        <SketchPicker
+  return (
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center p-4">
+      <h1 className="text-4xl font-bold mb-6 text-blue-600">Colorfly</h1>
+
+      <div className="mb-6">
+        <CirclePicker
+          colors={colorWheelColors}
           color={currentColor}
           onChangeComplete={(color) => setCurrentColor(color.hex)}
+          width="280px"
         />
       </div>
 
-      <button onClick={generatePalette}>Generate Palette</button>
+      <button
+        onClick={generatePalette}
+        className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded mb-6 transition"
+      >
+        Generate Palette
+      </button>
 
-      <div className="palette">
+      <div className="flex flex-wrap justify-center gap-4 mb-6">
         {colors.map((color, index) => (
           <div
             key={index}
-            className="color-swatch"
+            className="w-24 h-24 rounded-lg cursor-pointer relative overflow-hidden shadow-md transform hover:scale-105 transition"
             style={{ backgroundColor: color }}
             onClick={() => navigator.clipboard.writeText(color)}
           >
-            <span>{color}</span>
+            <span className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-white bg-opacity-80 text-sm px-2 py-1 rounded">
+              {color}
+            </span>
           </div>
         ))}
       </div>
 
       {colors.length > 0 && (
-        <>
-          <button onClick={sharePalette}>Share Palette</button>
-          <button onClick={handleGenerateLink}>Generate Shareable Link</button>
-        </>
+        <div className="flex flex-col md:flex-row gap-4">
+          <button
+            onClick={sharePalette}
+            className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded transition"
+          >
+            Share Palette
+          </button>
+          <button
+            onClick={handleGenerateLink}
+            className="bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 px-4 rounded transition"
+          >
+            Generate Shareable Link
+          </button>
+        </div>
       )}
-
-      <style jsx>{styles}</style>
     </div>
   );
 };
-
 
 const Root = () => (
   <Router>
@@ -260,136 +306,5 @@ const Root = () => (
     </Routes>
   </Router>
 );
-
-
-const styles = `
-  .app {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    text-align: center;
-    font-family: Arial, sans-serif;
-  }
-
-  .color-picker {
-    margin: 20px 0;
-    display: flex;
-    justify-content: center;
-  }
-
-  .palette {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin: 20px 0;
-    justify-content: center;
-  }
-
-  .color-swatch {
-    width: 100px;
-    height: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: transform 0.2s;
-    position: relative;
-  }
-
-  .color-swatch:hover {
-    transform: scale(1.05);
-  }
-
-  .color-swatch span {
-    position: absolute;
-    bottom: 5px;
-    background: rgba(255, 255, 255, 0.8);
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-  }
-
-  button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    background: #007bff;
-    color: white;
-    cursor: pointer;
-    margin: 10px;
-    transition: background 0.3s;
-  }
-
-  button:hover {
-    background: #0056b3;
-  }
-
-  a {
-    display: inline-block;
-    margin-top: 20px;
-    color: #007bff;
-    text-decoration: none;
-  }
-
-  a:hover {
-    text-decoration: underline;
-  }
-`;
-
-const paletteStyles = `
-  .app {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    text-align: center;
-    font-family: Arial, sans-serif;
-  }
-
-  .palette {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin: 20px 0;
-    justify-content: center;
-  }
-
-  .color-swatch {
-    width: 100px;
-    height: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: transform 0.2s;
-    position: relative;
-  }
-
-  .color-swatch:hover {
-    transform: scale(1.05);
-  }
-
-  .color-swatch span {
-    position: absolute;
-    bottom: 5px;
-    background: rgba(255, 255, 255, 0.8);
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-  }
-
-  a {
-    display: inline-block;
-    margin-top: 20px;
-    color: #007bff;
-    text-decoration: none;
-  }
-
-  a:hover {
-    text-decoration: underline;
-  }
-`;
-
 
 export default Root;
