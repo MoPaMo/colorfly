@@ -233,79 +233,79 @@ const App = () => {
       .catch((err) => console.error("Failed to copy: ", err));
   };
 
-  return (
+return (
     <div className="min-h-screen bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-500 flex flex-col items-center p-6">
-      <div className="bg-white bg-opacity-90 rounded-2xl shadow-2xl p-8 w-full max-w-3xl">
-        <h1 className="text-5xl font-extrabold mb-6 text-center text-gray-800 drop-shadow-lg">
-          Colorfly
-        </h1>
+        <div className="bg-white bg-opacity-90 rounded-2xl shadow-2xl p-8 w-full max-w-3xl">
+            <h1 className="text-5xl font-extrabold mb-6 text-center text-gray-800 drop-shadow-lg flex items-center justify-center">
+                <img src="/logo.svg" alt="logo" className="h-24 mr-0" /> Colorfly
+            </h1>
 
-        <div className="mb-8">
-          <SketchPicker
-            color={currentColor}
-            onChangeComplete={(color) => setCurrentColor(color.hex)}
-            disableAlpha 
-            styles={{
-              default: {
-                picker: {
-                  boxShadow: "none",
-                },
-                saturation: {
-                  boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
-                },
-                controls: {
-                  marginTop: "1rem",
-                  padding: "0",
-                },
-                color: {
-                  boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
-                },
-              },
-            }}
-          />
-        </div>
-
-        <button
-          onClick={generatePalette}
-          className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold py-3 px-6 rounded-full shadow-lg transition transform hover:scale-105 duration-300"
-        >
-          Generate Palette
-        </button>
-
-        <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 gap-6">
-          {colors.map((color, index) => (
-            <div
-              key={index}
-              className="w-full h-32 rounded-xl cursor-pointer relative overflow-hidden shadow-md transform hover:scale-105 transition-transform duration-300"
-              style={{ backgroundColor: color }}
-              onClick={() => navigator.clipboard.writeText(color)}
-            >
-              <span className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-white bg-opacity-80 text-sm px-3 py-1 rounded">
-                {color}
-              </span>
+            <div className="mb-8">
+                <SketchPicker
+                    color={currentColor}
+                    onChangeComplete={(color) => setCurrentColor(color.hex)}
+                    disableAlpha 
+                    styles={{
+                        default: {
+                            picker: {
+                                boxShadow: "none",
+                            },
+                            saturation: {
+                                boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
+                            },
+                            controls: {
+                                marginTop: "1rem",
+                                padding: "0",
+                            },
+                            color: {
+                                boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
+                            },
+                        },
+                    }}
+                />
             </div>
-          ))}
-        </div>
 
-        {colors.length > 0 && (
-          <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
             <button
-              onClick={sharePalette}
-              className="flex-1 bg-gradient-to-r from-green-400 to-teal-500 hover:from-green-500 hover:to-teal-600 text-white font-semibold py-3 px-6 rounded-full shadow-lg transition transform hover:scale-105 duration-300"
+                onClick={generatePalette}
+                className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold py-3 px-6 rounded-full shadow-lg transition transform hover:scale-105 duration-300"
             >
-              Share Palette
+                Generate Palette
             </button>
-            <button
-              onClick={handleGenerateLink}
-              className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-3 px-6 rounded-full shadow-lg transition transform hover:scale-105 duration-300"
-            >
-              Generate Shareable Link
-            </button>
-          </div>
-        )}
-      </div>
+
+            <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 gap-6">
+                {colors.map((color, index) => (
+                    <div
+                        key={index}
+                        className="w-full h-32 rounded-xl cursor-pointer relative overflow-hidden shadow-md transform hover:scale-105 transition-transform duration-300"
+                        style={{ backgroundColor: color }}
+                        onClick={() => navigator.clipboard.writeText(color)}
+                    >
+                        <span className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-white bg-opacity-80 text-sm px-3 py-1 rounded">
+                            {color}
+                        </span>
+                    </div>
+                ))}
+            </div>
+
+            {colors.length > 0 && (
+                <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+                    <button
+                        onClick={sharePalette}
+                        className="flex-1 bg-gradient-to-r from-green-400 to-teal-500 hover:from-green-500 hover:to-teal-600 text-white font-semibold py-3 px-6 rounded-full shadow-lg transition transform hover:scale-105 duration-300"
+                    >
+                        Share Palette
+                    </button>
+                    <button
+                        onClick={handleGenerateLink}
+                        className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-3 px-6 rounded-full shadow-lg transition transform hover:scale-105 duration-300"
+                    >
+                        Generate Shareable Link
+                    </button>
+                </div>
+            )}
+        </div>
     </div>
-  );
+);
 };
 
 const Root = () => (
