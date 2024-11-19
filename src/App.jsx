@@ -240,12 +240,14 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-500 flex flex-col items-center p-6">
-      <div className="bg-white bg-opacity-90 rounded-2xl shadow-2xl p-8 w-full max-w-3xl">
-        <h1 className="text-5xl font-extrabold mb-6 text-center text-gray-800 drop-shadow-lg flex items-center justify-center">
-          <img src="/logo.svg" alt="logo" className="h-24 mr-0" /> Colorfly
+      <div className="bg-white bg-opacity-90 rounded-2xl shadow-2xl p-8 w-full">
+        <h1 className="text-5xl font-extrabold mb-6 text-center text-gray-800 drop-shadow-lg flex items-center justify-center gap-0">
+          color
+          <img src="/logo.svg" alt="logo" className="h-12 m-1 p-0" />
+          fly
         </h1>
 
-        <div className="mb-8">
+        <div className="mb-8 flex justify-center">
           <SketchPicker
             color={currentColor}
             onChangeComplete={(color) => setCurrentColor(color.hex)}
