@@ -1,6 +1,6 @@
-// src/App.jsx
+// ~/Desktop/Projects/colorfly/src/App.jsx
 import React, { useState, useEffect } from "react";
-import { CirclePicker } from "react-color"; // Using CirclePicker as color wheel
+import { SketchPicker } from "react-color"; 
 import { saveAs } from "file-saver";
 import {
   BrowserRouter as Router,
@@ -10,7 +10,7 @@ import {
   useLocation,
 } from "react-router-dom";
 
-// Utility Functions
+
 const hexToHSL = (hex) => {
   let r = parseInt(hex.substring(1, 3), 16) / 255;
   let g = parseInt(hex.substring(3, 5), 16) / 255;
@@ -23,7 +23,7 @@ const hexToHSL = (hex) => {
     l = (max + min) / 2;
 
   if (max === min) {
-    h = s = 0; // achromatic
+    h = s = 0; 
   } else {
     let d = max - min;
     s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
@@ -93,7 +93,7 @@ const HSLToHex = (h, s, l) => {
   return `#${r}${g}${b}`;
 };
 
-// Palette Display Component
+
 const PaletteDisplay = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -102,49 +102,55 @@ const PaletteDisplay = () => {
 
   if (colors.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
-        <h1 className="text-3xl font-bold mb-4">No Palette Found</h1>
-        <p className="text-lg mb-6">
-          Please generate a palette to create a shareable link.
-        </p>
-        <a href="/" className="text-blue-500 hover:underline">
-          Go Back
-        </a>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 p-4">
+        <div className="bg-white bg-opacity-90 rounded-lg shadow-lg p-8 text-center">
+          <h1 className="text-4xl font-extrabold mb-4 text-gray-800">No Palette Found</h1>
+          <p className="text-lg mb-6 text-gray-600">
+            Please generate a palette to create a shareable link.
+          </p>
+          <a href="/" className="text-blue-600 hover:text-blue-800 font-semibold">
+            Go Back
+          </a>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
-      <h1 className="text-3xl font-bold mb-6">Your Shared Palette</h1>
-      <div className="flex flex-wrap justify-center gap-4">
-        {colors.map((color, index) => (
-          <div
-            key={index}
-            className="w-24 h-24 rounded-lg cursor-pointer relative overflow-hidden shadow-md"
-            style={{ backgroundColor: color }}
-            onClick={() => navigator.clipboard.writeText(color)}
-          >
-            <span className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-white bg-opacity-80 text-sm px-2 py-1 rounded">
-              {color}
-            </span>
-          </div>
-        ))}
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-green-400 to-blue-500 p-4">
+      <div className="bg-white bg-opacity-90 rounded-lg shadow-lg p-8 w-full max-w-4xl">
+        <h1 className="text-4xl font-extrabold mb-6 text-gray-800 text-center">Your Shared Palette</h1>
+        <div className="flex flex-wrap justify-center gap-6">
+          {colors.map((color, index) => (
+            <div
+              key={index}
+              className="w-32 h-32 rounded-lg cursor-pointer relative overflow-hidden shadow-md transform hover:scale-105 transition-transform duration-300"
+              style={{ backgroundColor: color }}
+              onClick={() => navigator.clipboard.writeText(color)}
+            >
+              <span className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-white bg-opacity-80 text-sm px-3 py-1 rounded">
+                {color}
+              </span>
+            </div>
+          ))}
+        </div>
+        <div className="mt-8 flex justify-center space-x-6">
+          <a href="/" className="text-blue-600 hover:text-blue-800 font-semibold">
+            Go Back
+          </a>
+        </div>
       </div>
-      <a href="/" className="mt-6 text-blue-500 hover:underline">
-        Go Back
-      </a>
     </div>
   );
 };
 
-// Main App Component
+
 const App = () => {
   const [colors, setColors] = useState([]);
   const [currentColor, setCurrentColor] = useState("#ff0000");
   const navigate = useNavigate();
 
-  // Register service worker for PWA
+  
   useEffect(() => {
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
@@ -183,8 +189,7 @@ const App = () => {
 
     setColors(palette);
   };
-
-  // Share palette using Web Share API or fallback
+  
   const sharePalette = async () => {
     const paletteData = {
       colors: colors,
@@ -206,15 +211,14 @@ const App = () => {
         console.error("Error sharing:", error);
       }
     } else {
-      // Fallback for browsers that don't support Web Share API
+      
       const blob = new Blob([JSON.stringify(paletteData, null, 2)], {
         type: "application/json",
       });
       saveAs(blob, "colorfly-palette.json");
     }
   };
-
-  // Handle generating shareable link
+  
   const handleGenerateLink = () => {
     if (colors.length === 0) {
       alert("Please generate a palette first.");
@@ -229,71 +233,77 @@ const App = () => {
       .catch((err) => console.error("Failed to copy: ", err));
   };
 
-  // Available colors for the color wheel (preset colors)
-  const colorWheelColors = [
-    "#FF6900",
-    "#FCB900",
-    "#7BDCB5",
-    "#00D084",
-    "#8ED1FC",
-    "#0693E3",
-    "#ABB8C3",
-    "#EB144C",
-    "#F78DA7",
-    "#9900EF",
-  ];
-
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center p-4">
-      <h1 className="text-4xl font-bold mb-6 text-blue-600">Colorfly</h1>
+    <div className="min-h-screen bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-500 flex flex-col items-center p-6">
+      <div className="bg-white bg-opacity-90 rounded-2xl shadow-2xl p-8 w-full max-w-3xl">
+        <h1 className="text-5xl font-extrabold mb-6 text-center text-gray-800 drop-shadow-lg">
+          Colorfly
+        </h1>
 
-      <div className="mb-6">
-        <CirclePicker
-          colors={colorWheelColors}
-          color={currentColor}
-          onChangeComplete={(color) => setCurrentColor(color.hex)}
-          width="280px"
-        />
-      </div>
-
-      <button
-        onClick={generatePalette}
-        className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded mb-6 transition"
-      >
-        Generate Palette
-      </button>
-
-      <div className="flex flex-wrap justify-center gap-4 mb-6">
-        {colors.map((color, index) => (
-          <div
-            key={index}
-            className="w-24 h-24 rounded-lg cursor-pointer relative overflow-hidden shadow-md transform hover:scale-105 transition"
-            style={{ backgroundColor: color }}
-            onClick={() => navigator.clipboard.writeText(color)}
-          >
-            <span className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-white bg-opacity-80 text-sm px-2 py-1 rounded">
-              {color}
-            </span>
-          </div>
-        ))}
-      </div>
-
-      {colors.length > 0 && (
-        <div className="flex flex-col md:flex-row gap-4">
-          <button
-            onClick={sharePalette}
-            className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded transition"
-          >
-            Share Palette
-          </button>
-          <button
-            onClick={handleGenerateLink}
-            className="bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 px-4 rounded transition"
-          >
-            Generate Shareable Link
-          </button>
+        <div className="mb-8">
+          <SketchPicker
+            color={currentColor}
+            onChangeComplete={(color) => setCurrentColor(color.hex)}
+            disableAlpha 
+            styles={{
+              default: {
+                picker: {
+                  boxShadow: "none",
+                },
+                saturation: {
+                  boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
+                },
+                controls: {
+                  marginTop: "1rem",
+                  padding: "0",
+                },
+                color: {
+                  boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
+                },
+              },
+            }}
+          />
         </div>
-      )}
+
+        <button
+          onClick={generatePalette}
+          className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold py-3 px-6 rounded-full shadow-lg transition transform hover:scale-105 duration-300"
+        >
+          Generate Palette
+        </button>
+
+        <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 gap-6">
+          {colors.map((color, index) => (
+            <div
+              key={index}
+              className="w-full h-32 rounded-xl cursor-pointer relative overflow-hidden shadow-md transform hover:scale-105 transition-transform duration-300"
+              style={{ backgroundColor: color }}
+              onClick={() => navigator.clipboard.writeText(color)}
+            >
+              <span className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-white bg-opacity-80 text-sm px-3 py-1 rounded">
+                {color}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {colors.length > 0 && (
+          <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+            <button
+              onClick={sharePalette}
+              className="flex-1 bg-gradient-to-r from-green-400 to-teal-500 hover:from-green-500 hover:to-teal-600 text-white font-semibold py-3 px-6 rounded-full shadow-lg transition transform hover:scale-105 duration-300"
+            >
+              Share Palette
+            </button>
+            <button
+              onClick={handleGenerateLink}
+              className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-3 px-6 rounded-full shadow-lg transition transform hover:scale-105 duration-300"
+            >
+              Generate Shareable Link
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
